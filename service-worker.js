@@ -1,4 +1,4 @@
-const CACHE='iratto-watashi-v06';
+const CACHE='iratto-watashi-v07';
 const FILES=[
   './',
   './index.html',
