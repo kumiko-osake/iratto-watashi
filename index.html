@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7b4b45">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="イラッと、わたし。">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>イラッと、わたし。</title>
+<style>
+:root{--bg:#f4efe9;--card:#fffdf9;--ink:#2f2927;--muted:#817772;--accent:#7b4b45;--soft:#eadfd9;--line:#ddd2cc;--danger:#b64141;--ok:#5a735c}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Yu Gothic",sans-serif;background:var(--bg);color:var(--ink)}
+header{position:sticky;top:0;z-index:5;background:rgba(244,239,233,.96);backdrop-filter:blur(10px);padding:16px;border-bottom:1px solid var(--line)}
+h1{font-size:24px;margin:0 0 4px}.sub{font-size:12px;color:var(--muted)}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}nav button{border:0;border-radius:12px;padding:10px 4px;background:var(--soft);color:var(--ink);font-size:12px}nav button.active{background:var(--accent);color:#fff}
+main{max-width:720px;margin:auto;padding:14px 14px 40px}section{display:none}.show{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.03)}
+.hero{text-align:center;padding:22px 16px}.today{font-size:14px;color:var(--muted)}.count{font-size:54px;font-weight:800;margin:8px 0 4px}.count small{font-size:18px;font-weight:600}
+.iratBtn{width:min(330px,88vw);aspect-ratio:1/1;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:34px;font-weight:800;box-shadow:0 12px 30px rgba(123,75,69,.25);margin:12px auto;display:block;touch-action:manipulation}.iratBtn:active{transform:scale(.97)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.secondary,.danger,.primary{border:0;border-radius:14px;padding:13px 14px;font-size:15px;font-weight:700}.secondary{background:var(--soft);color:var(--ink)}.danger{background:#f2dddd;color:var(--danger)}.primary{background:var(--accent);color:white;width:100%}
+.small{font-size:12px;color:var(--muted);line-height:1.6}.event{border-top:1px solid var(--line);padding:12px 0}.event:first-child{border-top:0}.eventHead{display:flex;justify-content:space-between;gap:10px;align-items:center}.time{font-weight:800}.badge{display:inline-block;background:var(--soft);padding:6px 9px;border-radius:999px;font-size:12px;margin:5px 4px 0 0}
+label{display:block;font-size:13px;margin:10px 0 5px;color:#4a433d}select,textarea,input{width:100%;border:1px solid var(--line);background:white;border-radius:12px;padding:12px;font-size:16px;color:var(--ink)}textarea{min-height:78px;resize:vertical}.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{position:relative}.chip input{position:absolute;opacity:0;pointer-events:none}.chip span{display:inline-block;border:1px solid var(--line);background:white;border-radius:999px;padding:9px 12px;font-size:14px}.chip input:checked+span{background:var(--accent);color:#fff;border-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:var(--soft);border-radius:16px;padding:14px}.stat b{font-size:28px;display:block}.empty{text-align:center;color:var(--muted);padding:24px 8px}.notice{background:#fff6dc;border:1px solid #e5d39c;border-radius:14px;padding:12px;margin-bottom:14px;font-size:13px;line-height:1.6}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:10px 18px 30px}
+</style>
+</head>
+<body>
+<header>
+<h1>イラッと、わたし。</h1>
+<div class="sub">その場では、押すだけ。あとで自分の傾向を見る。</div>
+<nav><button class="active" data-tab="tap">押す</button><button data-tab="history">履歴</button><button data-tab="insight">傾向</button></nav>
+</header>
+<main>
+<section id="tap" class="show">
+<div class="card hero">
+<div class="today" id="todayLabel"></div>
+<div class="count"><span id="todayCount">0</span><small> 回</small></div>
+<button class="iratBtn" id="iratBtn">😤<br>イラッ！</button>
+<p class="small">イラッとした瞬間に1回押すだけ。時刻は自動で残ります。</p>
+<div class="actions"><button class="secondary" id="undoBtn">↩ 1回もどす</button><button class="secondary" id="resetTodayBtn">今日を0回に</button></div>
+</div>
+<div class="card"><h2>今日の記録</h2><div id="todayEvents"></div></div>
+</section>
+<section id="history"><div class="card"><h2>これまでのイラッ</h2><div id="historyList"></div></div></section>
+<section id="insight"><div class="card"><h2>わたしの傾向</h2><div id="stats"></div><div id="patterns"></div></div><div class="card"><h2>データを守る</h2><p class="small">記録はこの端末のブラウザ内に保存されます。時々バックアップしてください。</p><button class="secondary" id="exportBtn">バックアップを書き出す</button><label>バックアップを戻す</label><input type="file" id="importFile" accept=".json,application/json"></div></section>
+</main>
+<footer>試作版 v0.1　※感情の記録・振り返り用です。</footer>
+<script>
+const KEY='iratto_watashi_v01';
+const $=id=>document.getElementById(id);
+function getData(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
+function setData(v){localStorage.setItem(KEY,JSON.stringify(v))}
+function dateKey(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
+function timeStr(d=new Date()){return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
+function fmtDate(s){const d=new Date(s+'T00:00:00');return `${d.getMonth()+1}/${d.getDate()}`}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function todayItems(){const k=dateKey();return getData().filter(x=>x.date===k)}
+function renderTap(){const k=dateKey();$('todayLabel').textContent=`${new Date().getMonth()+1}月${new Date().getDate()}日`;const items=todayItems();$('todayCount').textContent=items.length;const box=$('todayEvents');if(!items.length){box.innerHTML='<div class="empty">まだ今日は押していません。</div>';return}box.innerHTML=items.slice().reverse().map((e,i)=>`<div class="event"><div class="eventHead"><div class="time">${escapeHtml(e.time)}</div><button class="secondary" onclick="editEvent('${e.id}')">あとで記録</button></div>${e.level?`<span class="badge">${escapeHtml(e.level)}</span>`:''}${e.trigger?`<span class="badge">${escapeHtml(e.trigger)}</span>`:''}${e.note?`<div class="small" style="margin-top:7px">${escapeHtml(e.note)}</div>`:''}</div>`).join('')}
+$('iratBtn').onclick=()=>{const d=new Date(),data=getData();data.push({id:Date.now().toString(),date:dateKey(d),time:timeStr(d),timestamp:d.toISOString(),level:'',trigger:'',note:''});setData(data);if(navigator.vibrate)navigator.vibrate(40);renderTap()}
+$('undoBtn').onclick=()=>{let d=getData();const k=dateKey();for(let i=d.length-1;i>=0;i--){if(d[i].date===k){d.splice(i,1);break}}setData(d);renderTap()}
+$('resetTodayBtn').onclick=()=>{if(!confirm('今日の記録だけ0回に戻しますか？'))return;const k=dateKey();setData(getData().filter(x=>x.date!==k));renderTap()}
+window.editEvent=id=>{const d=getData(),e=d.find(x=>x.id===id);if(!e)return;const level=prompt('イラッの強さ（例：ちょいイラ／かなりイラ／爆発寸前）',e.level||'');if(level===null)return;const trigger=prompt('何にイラッとした？（あとで思い出せる範囲でOK）',e.trigger||'');if(trigger===null)return;const note=prompt('メモ（空欄でもOK）',e.note||'');if(note===null)return;e.level=level.trim();e.trigger=trigger.trim();e.note=note.trim();setData(d);renderTap();renderHistory();renderInsights()}
+function grouped(){const g={};getData().forEach(x=>(g[x.date]||(g[x.date]=[])).push(x));return g}
+function renderHistory(){const d=getData(),box=$('historyList');if(!d.length){box.innerHTML='<div class="empty">まだ記録がありません。</div>';return}const g=grouped();box.innerHTML=Object.keys(g).sort().reverse().map(day=>`<div class="event"><div class="eventHead"><b>${escapeHtml(day)}</b><span class="badge">${g[day].length}回</span></div>${g[day].slice().reverse().map(e=>`<div class="small" style="margin-top:8px">${escapeHtml(e.time)}${e.level?' ・ '+escapeHtml(e.level):''}${e.trigger?' ・ '+escapeHtml(e.trigger):''}</div>`).join('')}</div>`).join('')}
+function renderInsights(){const d=getData(),s=$('stats'),p=$('patterns');if(!d.length){s.innerHTML='<div class="empty">記録が増えると傾向が見えます。</div>';p.innerHTML='';return}const g=grouped(),days=Object.keys(g),maxDay=days.sort((a,b)=>g[b].length-g[a].length)[0];const hours={};d.forEach(x=>{const h=x.time.slice(0,2);hours[h]=(hours[h]||0)+1});const topHour=Object.entries(hours).sort((a,b)=>b[1]-a[1])[0];const weekdays=['日','月','火','水','木','金','土'];const wd={};d.forEach(x=>{const w=weekdays[new Date(x.date+'T00:00:00').getDay()];wd[w]=(wd[w]||0)+1});const topWd=Object.entries(wd).sort((a,b)=>b[1]-a[1])[0];s.innerHTML=`<div class="stats"><div class="stat"><span class="small">総イラッ回数</span><b>${d.length}</b>回</div><div class="stat"><span class="small">記録した日</span><b>${Object.keys(grouped()).length}</b>日</div><div class="stat"><span class="small">最多の日</span><b>${g[maxDay].length}</b>回</div><div class="stat"><span class="small">多い時間帯</span><b>${topHour?topHour[0]+'時':'—'}</b></div></div>`;p.innerHTML=`<h3>見えてきたこと</h3><span class="badge">いちばん多い曜日：${topWd?topWd[0]+'曜日':'—'}</span><span class="badge">いちばん多い時間帯：${topHour?topHour[0]+'時台':'—'}</span><span class="badge">最多日：${fmtDate(maxDay)} ${g[maxDay].length}回</span>`}
+function download(name,text){const b=new Blob([text],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+$('exportBtn').onclick=()=>download(`イラッとわたし_バックアップ_${dateKey()}.json`,JSON.stringify(getData(),null,2));
+$('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;setData(d);alert('バックアップを戻しました');renderTap();renderHistory();renderInsights()}catch(err){alert('読み込めませんでした')}};r.readAsText(f)}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('main section').forEach(s=>s.classList.remove('show'));$(b.dataset.tab).classList.add('show');if(b.dataset.tab==='history')renderHistory();if(b.dataset.tab==='insight')renderInsights()});
+renderTap();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+</script>
+</body></html>
