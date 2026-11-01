@@ -1,4 +1,4 @@
-const CACHE='iratto-watashi-v05';
+const CACHE='iratto-watashi-v06';
 const FILES=[
   './',
   './index.html',
@@ -6,7 +6,8 @@ const FILES=[
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
-  './icon-maskable-512.png'
+  './icon-maskable-512.png',
+  './shuwappu-iratto-mark-v06.png'
 ];
 
 self.addEventListener('install', event => {
