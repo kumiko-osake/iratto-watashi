@@ -1,4 +1,4 @@
-const CACHE='iratto-watashi-v07';
+const CACHE='iratto-watashi-v08';
 const FILES=[
   './',
   './index.html',
@@ -29,7 +29,7 @@ self.addEventListener('fetch', event => {
 
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, {cache:'no-store'})
         .then(response => {
           const copy = response.clone();
           caches.open(CACHE).then(cache => cache.put('./index.html', copy));
@@ -42,14 +42,15 @@ self.addEventListener('fetch', event => {
 
   event.respondWith(
     caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (response && response.status === 200) {
-          const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put(event.request, copy));
-        }
-        return response;
-      });
+      return fetch(event.request)
+        .then(response => {
+          if (response && response.status === 200) {
+            const copy = response.clone();
+            caches.open(CACHE).then(cache => cache.put(event.request, copy));
+          }
+          return response;
+        })
+        .catch(() => cached);
     })
   );
 });
